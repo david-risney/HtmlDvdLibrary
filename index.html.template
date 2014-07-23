@@ -1,0 +1,14 @@
+<!doctype html>
+<html class="goodFont whiteOnBlack backdrop borderless fill">
+<head>
+<script src="script.js"></script>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body class="borderless fill">
+<h2 id="recentlyWatchedTitle">Recently Watched</h2>
+<div id="recentlyWatched">
+</div>
+<h2>Movies</h2>
+{moviesList}
+</body>
+</html>

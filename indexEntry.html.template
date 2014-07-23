@@ -1,0 +1,2 @@
+<div class="smallPoster"><a class="borderless smallPoster fill" href="{encMovieTitle}/"><span class="kinectCommand">{movieTitle}</span><img src="{posterUri}" alt="{movieTitle}" class="smallPoster borderless fill"><div class="background borderless smallPoster fill title">{movieTitle}</div></a></div>
+
