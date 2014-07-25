@@ -12,6 +12,7 @@ Get-ChildItem * -Directory | %{
 		(Invoke-WebRequest -Uri ("http://api.themoviedb.org/3/search/multi?api_key=41d7473ac4fa3fb61a3eca0bd2ec47a9&query=" + $encName) -OutFile $infoPath);
 	}
 	if (Test-Path $infoPath) {
+		echo $infoPath;
 		$info = (gc $infoPath | ConvertFrom-Json).results[0];
 		$basePath = $config.images.base_url + "original";
 

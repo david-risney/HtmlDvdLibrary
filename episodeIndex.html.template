@@ -1,7 +1,7 @@
 <!doctype html>
 <html class="goodFont whiteOnBlack backdrop borderless fill">
 <head>
-<script src="../script.js"></script>
+<script src="../script.js" data-context="forceUpdateRecentlyWatched"></script>
 <link rel="stylesheet" type="text/css" href="../style.css">
 </head>
 <body class="borderless fill">

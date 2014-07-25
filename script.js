@@ -17,6 +17,10 @@
 		else {
 			applyRecentlyWatched();
 		}
+
+		if (document.scripts[document.scripts.length - 1].getAttribute("data-context") === "forceUpdateRecentlyWatched") {
+			updateRecentlyWatched();
+		}
 	}
 
 	function finishInitialize() {
@@ -56,31 +60,44 @@
 		stateLoaded = true;
 	}
 
-	function updateRecentlyWatched() {
-		var recentlyWatched = getRecentlyWatched(),
-			pathSegments,
+	function getLastPathSegment(pathname) {
+		var pathSegments,
 			lastPathSegment;
+		pathSegments = pathname.split("/").filter(function(pathSegment) {
+			return !!pathSegment.length;
+		});
+		return pathSegments[pathSegments.length - 1];
+	}
+
+	function getAllButFinalPathSegment(pathname) {
+		var pathSegments,
+			lastPathSegment;
+		pathSegments = pathname.split("/").filter(function(pathSegment) {
+			return !!pathSegment.length;
+		});
+		return "/" + pathSegments.slice(0, pathSegments.length - 1).join("/") + "/";
+	}
+
+	function updateRecentlyWatched() {
+		var recentlyWatched = getRecentlyWatched(getRecentlyWatched.video),
+			lastPathSegment = getLastPathSegment(document.location.pathname);
 
 		if (!recentlyWatched.length || recentlyWatched[0] !== document.location) {
-			pathSegments = document.location.pathname.split("/").filter(function(pathSegment) {
-				return !!pathSegment.length;
-			});
-			lastPathSegment = pathSegments[pathSegments.length - 1] + "/";
-
 			if (recentlyWatched.indexOf(lastPathSegment) >= 0) {
 				recentlyWatched.splice(recentlyWatched.indexOf(lastPathSegment), 1);
 			}
 
 			recentlyWatched = ([lastPathSegment].concat(recentlyWatched)).slice(0, 4);
-			localStorage["recentlyWatched"] = JSON.stringify(recentlyWatched);
+			localStorage[getRecentlyWatchedStorageName(getRecentlyWatched.video)] = JSON.stringify(recentlyWatched);
 		}
 	}
 
 	function applyRecentlyWatched() {
 		var recentlyWatchedElement = document.getElementById("recentlyWatched");
 
-		getRecentlyWatched().forEach(function(watchedUri) {
-			var original = document.querySelector("a[href='" + watchedUri + "']"),
+		getRecentlyWatched(getRecentlyWatched.index).forEach(function(watchedUri) {
+			var original = document.querySelector("a[href='" + watchedUri + "']") ||
+				document.querySelector("a[href='" + watchedUri + "/']"),
 				clone = original && original.parentNode.cloneNode(true);
 			if (clone) {
 				recentlyWatchedElement.appendChild(clone);
@@ -88,10 +105,20 @@
 		});
 	}
 
-	function getRecentlyWatched() {
-		var recentlyWatched = localStorage["recentlyWatched"];
+	function getRecentlyWatchedStorageName(requestContext) {
+		var pathContext = (requestContext === getRecentlyWatched.video) ? 
+				getAllButFinalPathSegment(document.location.pathname) :
+				document.location.pathname;
+		return pathContext + "#recentlyWatched";
+	}
+
+	function getRecentlyWatched(requestContext) {
+		var recentlyWatched = localStorage[getRecentlyWatchedStorageName(requestContext)];
 		return (recentlyWatched && JSON.parse(recentlyWatched)) || [];
 	}
+	getRecentlyWatched.index = "index";
+	getRecentlyWatched.video = "video";
+
 
 	document.addEventListener("DOMContentLoaded", initialize);
 })();
