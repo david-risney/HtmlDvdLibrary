@@ -15,6 +15,7 @@
 			videoElement.addEventListener("canplay", finishInitialize);
 		}
 		else {
+			applyStateToPosters();
 			applyRecentlyWatched();
 		}
 
@@ -33,8 +34,9 @@
 
 	function saveState() {
 		if (stateLoaded) {
-			localStorage[videoId + "#state"] = JSON.stringify({
+			localStorage[getStateStorageName()] = JSON.stringify({
 				currentTime: videoElement.currentTime,
+				duration: videoElement.duration,
 				paused: videoElement.paused,
 				volume: videoElement.volume,
 				muted: videoElement.muted
@@ -44,8 +46,8 @@
 
 	function restoreState() {
 		var state;
-		if (localStorage.hasOwnProperty(videoId + "#state")) {
-			state = JSON.parse(localStorage[videoId + "#state"]);
+		if (localStorage.hasOwnProperty(getStateStorageName())) {
+			state = JSON.parse(localStorage[getStateStorageName()]);
 			videoElement.currentTime = state.currentTime;
 			videoElement.volume = state.volume;
 			videoElement.muted = state.muted;
@@ -105,10 +107,39 @@
 		});
 	}
 
+	function applyStateToPosters() {
+		var links = document.querySelectorAll("a[class~='smallPoster']"),
+			link,
+			idx = 0,
+			state,
+			completionBar;
+
+		for (; idx < links.length; ++idx) {
+			link = links[idx];
+			state = localStorage[getStateStorageName(link.href)]
+			if (state) {
+				state = JSON.parse(state);
+				completionBar = link.querySelector(".completionBar");
+				completionBar.style.width = ((state.currentTime / state.duration) * 100) + "%";
+				completionBar.parentNode.classList.add("visibleCompletion");
+			}
+		}
+	}
+
+	function getId() {
+		return document.location.pathname;
+	}
+	function getParentId() {
+		return getAllButFinalPathSegment(document.location.pathname);
+	}
+
+	function getStateStorageName(absoluteUri) {
+		return (absoluteUri || ("" + document.location)) + "#state";
+	}
+
 	function getRecentlyWatchedStorageName(requestContext) {
 		var pathContext = (requestContext === getRecentlyWatched.video) ? 
-				getAllButFinalPathSegment(document.location.pathname) :
-				document.location.pathname;
+				getParentId() : getId();
 		return pathContext + "#recentlyWatched";
 	}
 

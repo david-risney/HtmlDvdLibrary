@@ -23,6 +23,8 @@
 .title {
 	font-family: "Segoe UI";
 	font-size: 300%;
+	overflow: hidden;
+	max-width: 100%;
 	text-wrap: unrestricted;
 }
 
@@ -41,6 +43,9 @@
 	-moz-box-pack: center;
 	-ms-flex-pack: center;
 	justify-content: center;
+
+	-ms-flex-direction: column;
+	flex-direction: column;
 }
 
 .semiTransparent {
@@ -93,3 +98,20 @@ h2:only-child {
 }
 }
 
+.completion {
+	width: 80%;
+	height: 4%;
+}
+
+.visibleCompletion {
+	border: 2px white solid;
+	background: black;
+}
+
+.completionBar {
+	left: 0%;
+	height: 100%;
+	width: 0%;
+	position: relative;
+	background: white;
+}
