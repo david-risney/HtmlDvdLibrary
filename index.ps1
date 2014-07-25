@@ -28,7 +28,7 @@ Get-ChildItem * -Directory | %{
 
 		if ($videos.length -gt 0) {
 			$indexEntries += ((Get-Content indexEntry.html.template | %{ 
-				$_ -replace "{posterUri}",($basePath + $info.poster_path) 
+				$_ -replace "{posterUri}",($encName + "/poster.jpg") #($basePath + $info.poster_path) 
 			} | %{ 
 				$_ -replace "{movieTitle}",$name 
 			} | %{ 
@@ -58,7 +58,7 @@ Get-ChildItem * -Directory | %{
 					$previousEncVideoHtmlUri = $encVideoHtmlUri;
 	
 					$subIndexEntries = @((Get-Content episodeIndexEntry.html.template | %{ 
-						$_ -replace "{posterUri}",($basePath + $info.poster_path) 
+						$_ -replace "{posterUri}","poster.jpg" # ($basePath + $info.poster_path) 
 					} | %{ 
 						$_ -replace "{movieTitle}",$videoName 
 					} | %{ 
