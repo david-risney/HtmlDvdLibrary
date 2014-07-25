@@ -5,6 +5,10 @@
 <link rel="stylesheet" type="text/css" href="../style.css">
 </head>
 <body class="borderless fill">
-<video id="video" class="borderless fill" src="{movieUri}" poster="backdrop.jpg" autoplay controls preload="metadata"><div class="sorry">Your browser cannot play H.264 high profile content with the HTML5 video element.</div></video>
+<h2 id="recentlyWatchedTitle">Recently Watched</h2>
+<div id="recentlyWatched">
+</div>
+<h2>Movies</h2>
+{moviesList}
 </body>
 </html>
