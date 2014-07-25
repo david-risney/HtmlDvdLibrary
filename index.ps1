@@ -6,7 +6,7 @@ Get-ChildItem * -Directory | %{
 	$name = $folder.Name;
 	$encName = [System.Uri]::EscapeDataString($name);
 	$infoPath = (Join-Path $folder.FullName "info.json");
-	$videos = @(dir $folder.FullName -fi *.m4v) + @(dir $folder.FullName -fi *.mp4);
+	$videos = @(@(dir $folder.FullName -fi *.m4v) + @(dir $folder.FullName -fi *.mp4) | sort -Descending Name);
 
 	if (!(Test-Path $infoPath)) {
 		(Invoke-WebRequest -Uri ("http://api.themoviedb.org/3/search/multi?api_key=41d7473ac4fa3fb61a3eca0bd2ec47a9&query=" + $encName) -OutFile $infoPath);
@@ -39,25 +39,31 @@ Get-ChildItem * -Directory | %{
 				$video = $videos[0];
 				$encVideoName = [System.Uri]::EscapeDataString($video.Name);
 
-				Get-Content movie.html.template | %{ $_ -replace "{movieUri}",$encVideoName; } | Out-File -FilePath (Join-Path $folder.FullName "index.html") -Encoding utf8;
+				Get-Content movie.html.template | %{ 
+					($_ -replace "{movieUri}",$encVideoName) -replace "{nextUri}","../"; 
+				} | Out-File -FilePath (Join-Path $folder.FullName "index.html") -Encoding utf8;
 			}
 			else {
 				$subIndexEntries = "";
+				$previousEncVideoHtmlUri = "./";
 				$videos | %{
 					$video = $_;
 					$videoName = $video.name.substring(0, $video.Name.lastIndexOf("."));
 					$encVideoName = [System.Uri]::EscapeDataString($video.Name);
 					$encVideoHtmlUri = $encVideoName + ".html";
 	
-					Get-Content movie.html.template | %{ $_ -replace "{movieUri}",$encVideoName; } | Out-File -FilePath (Join-Path $folder.FullName $encVideoHtmlUri) -Encoding utf8;
+					Get-Content movie.html.template | %{ 
+						($_ -replace "{movieUri}",$encVideoName) -replace "{nextUri}",$previousEncVideoHtmlUri; 
+					} | Out-File -FilePath (Join-Path $folder.FullName $encVideoHtmlUri) -Encoding utf8;
+					$previousEncVideoHtmlUri = $encVideoHtmlUri;
 	
-					$subIndexEntries += ((Get-Content episodeIndexEntry.html.template | %{ 
+					$subIndexEntries = @((Get-Content episodeIndexEntry.html.template | %{ 
 						$_ -replace "{posterUri}",($basePath + $info.poster_path) 
 					} | %{ 
 						$_ -replace "{movieTitle}",$videoName 
 					} | %{ 
 						$_ -replace "{encMovieTitle}",$encVideoName 
-					}) -join "`n");
+					}) -join "`n") + $subIndexEntries;
 				}
 
 				Get-Content episodeIndex.html.template | %{ $_ -replace "{moviesList}",($subIndexEntries -join "`n"); } | Out-File -FilePath (Join-Path $folder.FullName "index.html") -Encoding utf8

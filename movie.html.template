@@ -6,5 +6,6 @@
 </head>
 <body class="borderless fill">
 <video id="video" class="borderless fill" src="{movieUri}" poster="backdrop.jpg" autoplay controls preload="metadata"><div class="sorry">Your browser cannot play H.264 high profile content with the HTML5 video element.</div></video>
+<a class="kinectCommand nextPage" href="{nextUri}">Next</a>
 </body>
 </html>

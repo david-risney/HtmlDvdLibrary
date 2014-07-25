@@ -13,6 +13,7 @@
 			videoId = videoElement.src;
 
 			videoElement.addEventListener("canplay", finishInitialize);
+			videoElement.addEventListener("ended", videoComplete);
 		}
 		else {
 			applyStateToPosters();
@@ -22,6 +23,10 @@
 		if (document.scripts[document.scripts.length - 1].getAttribute("data-context") === "forceUpdateRecentlyWatched") {
 			updateRecentlyWatched();
 		}
+	}
+
+	function videoComplete() {
+		document.location = document.querySelector(".nextPage").href;
 	}
 
 	function finishInitialize() {
@@ -48,10 +53,11 @@
 		var state;
 		if (localStorage.hasOwnProperty(getStateStorageName())) {
 			state = JSON.parse(localStorage[getStateStorageName()]);
-			videoElement.currentTime = state.currentTime;
+			videoElement.currentTime = Math.min(state.currentTime, state.duration - 2);
 			videoElement.volume = state.volume;
 			videoElement.muted = state.muted;
-			if (state.paused) {
+
+			if (state.paused || state.duration - state.currentTime < 3) {
 				videoElement.pause();
 			}
 			else {
