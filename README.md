@@ -20,3 +20,20 @@ I've ripped my DVD library by on one computer ripping the DVD with DVD Rip and o
 
 * [DVD Rip](http://lifehacker.com/355281/dvd-rip-automates-one-click-dvd-ripping) for easy DVD ripping.
 * [Handbrake](http://lifehacker.com/most-popular-video-converter-handbrake-1206787968) for converting from a ripped DVD to MP4.
+
+### Episodic DVDs
+
+Ripping DVDs of TV episodes I've found to be more difficult. In one case all the episodes where on one title and each had six chapters. I wrote the following in PowerShell to use the Handbrake CLI to rip the individual episodes. To reuse for another purpose will obviously require updating the script for the appropriate number of chapters per episode, etc.
+
+    $epOffset = 0;
+    $dvdPath = "E:\UserData\Public\Videos\Dvds\Cowboy Bebop (Disc 1)";
+    $chaptersPerEp = 6;
+    @(0..8) | %{ 
+        $name = "S01E{0:00}.m4v" -f ($_ + 1 + $epOffset);
+        $chs = "{0}-{1}" -f ($_ * $chaptersPerEp + 1),(($_ + 1) * $chaptersPerEp);
+        if (!(test-path $name)) { 
+            "Making $name from $chs"; 
+            & 'C:\Program Files\Handbrake\HandBrakeCLI.exe' -t 2 -N English --native-dub -c $chs -i $dvdPath -o $name  
+        }
+    }
+
