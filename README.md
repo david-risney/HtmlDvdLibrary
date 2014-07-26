@@ -37,3 +37,16 @@ Ripping DVDs of TV episodes I've found to be more difficult. In one case all the
         }
     }
 
+Other TV series DVD sets had a different title for each episode, making it much simpler to extract.
+
+    $epOffset = 0;
+    $dvdPath = "E:\UserData\Public\Videos\Dvds\Firefly - The Complete Series Disc 1";
+    @(0..2) | %{
+        $title = $_ + 1;
+        $name = "S01E{0:00}.m4v" -f ($_ + 1 + $epOffset);
+        if (!(test-path $name)) {
+            "Making $name from $title";
+            & 'C:\Program Files\Handbrake\HandBrakeCLI.exe' -t $title -N English --native-dub -i $dvdPath -o $name;
+        }
+    }
+
