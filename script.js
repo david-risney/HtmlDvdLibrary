@@ -125,9 +125,11 @@
 			state = localStorage[getStateStorageName(link.href)]
 			if (state) {
 				state = JSON.parse(state);
-				completionBar = link.querySelector(".completionBar");
-				completionBar.style.width = ((state.currentTime / state.duration) * 100) + "%";
-				completionBar.parentNode.classList.add("visibleCompletion");
+				if (state.currentTime > 10) {
+					completionBar = link.querySelector(".completionBar");
+					completionBar.style.width = ((state.currentTime / state.duration) * 100) + "%";
+					completionBar.parentNode.classList.add("visibleCompletion");
+				}
 			}
 		}
 	}
