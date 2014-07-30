@@ -6,9 +6,9 @@
 </head>
 <body class="borderless fill">
 <h2 id="recentlyWatchedTitle">Recently Watched</h2>
-<div id="recentlyWatched">
+<div class="posterList" id="recentlyWatched">
 </div>
 <h2>Movies</h2>
-{moviesList}
+<div class="posterList">{moviesList}</div>
 </body>
 </html>
