@@ -1,6 +1,33 @@
 $config = (Invoke-WebRequest -Uri "http://api.themoviedb.org/3/configuration?api_key=41d7473ac4fa3fb61a3eca0bd2ec47a9").Content | ConvertFrom-Json;
 $indexEntries = "";
 
+function resizeImageSmaller {
+    param(
+        [string] $imagePath,
+        [Double] $width,
+        [Double] $height);
+
+    $image = New-Object -ComObject Wia.ImageFile        
+    $image.LoadFile($imagePath);
+
+    if ($image.width -gt $width -or $image.height -gt $height) {
+        $filter = New-Object -ComObject Wia.ImageProcess
+        $scaleIdx = $filter.Filters.Count + 1;
+        $scaleId = $filter.FilterInfos.Item("Scale").FilterId;
+
+        $filter.Filters.Add($scaleId);
+
+        $filter.Filters.Item($scaleIdx).Properties.Item("PreserveAspectRatio") = $true;
+        $filter.Filters.Item($scaleIdx).Properties.Item("MaximumWidth") = $width
+        $filter.Filters.Item($scaleIdx).Properties.Item("MaximumHeight") = $height
+
+        $image = $filter.Apply($image.PSObject.BaseObject);
+
+        Remove-Item $imagePath;
+        $image.SaveFile($imagePath);
+    }
+}
+
 Get-ChildItem * -Directory | %{
 	$folder = $_;
 	$name = $folder.Name;
@@ -20,11 +47,21 @@ Get-ChildItem * -Directory | %{
 		if ($info.backdrop_path -and !(Test-Path $backdropPath)) {
 			Invoke-WebRequest ($basePath + $info.backdrop_path) -OutFile $backdropPath;
 		}
+        $backdropFullPath = (Join-Path $folder.FullName "backdrop.full.jpg");
+		if ((Test-Path $backdropPath) -and !(Test-Path $backdropFullPath)) {
+            cp $backdropPath $backdropFullPath;
+            resizeImageSmaller $backdropPath 1376 768;
+        }
 
 		$posterPath = (Join-Path $folder.FullName "poster.jpg");
 		if ($info.poster_path -and !(Test-Path $posterPath)) {
 			Invoke-WebRequest ($basePath + $info.poster_path) -OutFile $posterPath;
 		}
+        $posterFullPath = (Join-Path $folder.FullName "poster.full.jpg");
+		if ((Test-Path $posterPath) -and !(Test-Path $posterFullPath)) {
+            cp $posterPath $posterFullPath;
+            resizeImageSmaller $posterPath 256 384;
+        }
 
 		if ($videos.length -gt 0) {
 			$indexEntries += ((Get-Content indexEntry.html.template | %{ 
