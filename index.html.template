@@ -1,8 +1,9 @@
 <!doctype html>
-<html class="goodFont whiteOnBlack backdrop borderless fill">
+<html class="goodFont darkOnLight backdrop borderless fill">
 <head>
 <meta http-equiv="x-ua-compatible" content="IE=edge">
 <script src="script.js"></script>
+<script src="directionPad.js"></script>
 <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body class="borderless fill">

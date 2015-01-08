@@ -1,6 +1,6 @@
-.whiteOnBlack {
-    background: black;
-    color: white;
+.darkOnLight {
+    background: #E2E2E2;
+    color: #181818;
 }
 
 .goodFont {
@@ -66,6 +66,8 @@
     -ms-flex-pack: center;
     justify-content: center;
 
+    -webkit-box-orient: vertical;
+    -moz-box-orient: vertical;
     -ms-flex-direction: column;
     flex-direction: column;
 }
@@ -115,6 +117,16 @@ h2:only-child {
 .smallPoster {
     width: 256px;
     height: 384px;
+}
+
+a.smallPoster:hover, a.smallPoster:focus {
+    transform: scale(1.2);
+    -webkit-transform: scale(1.2);
+    transform-origin: 50% 50%;
+    -webkit-transform-origin: 50% 50%;
+    z-index: 2;
+    box-shadow: 0px 0px 10px 4px rgba(10, 10, 10, 0.75);
+    border: black;
 }
 
 @media (min-width:1265px) and (max-width:1279) { /* 5 * 253 = 1265 */
